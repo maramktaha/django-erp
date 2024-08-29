@@ -161,7 +161,7 @@ DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.mysql',
         'NAME':'erp_project',
-        'USER': 'root',
+        'USER': 'maram',
         'PASSWORD':'123456',
         'HOST': 'localhost',
         'PORT': '123456',
