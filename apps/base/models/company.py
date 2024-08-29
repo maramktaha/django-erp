@@ -31,7 +31,7 @@ class PyCompany(PyFather):
     phone = models.CharField(max_length=20, blank=True)
     email = models.EmailField(max_length=40, blank=True)
 
-    country = models.ForeignKey(PyCountry, on_delete=models.PROTECT)
+    country = models.ForeignKey(PyCountry, on_delete=models.PROTECT,null=True,blank=True)
     currency_id = models.ForeignKey(PyCurrency, null=True, blank=True, on_delete=models.PROTECT)
 
     postal_code = models.CharField(max_length=255, blank=True)

@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import os
 
 # Django Library
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -26,21 +26,48 @@ from ..rename_image import RenameImage
 
 
 def image_path(instance, filename):
-    return os.path.join('avatar', str(instance.pk) + '.' + filename.rsplit('.', 1)[1])
+    return os.path.join("avatar", str(instance.pk) + "." + filename.rsplit(".", 1)[1])
+
+
+class MyUserManager(BaseUserManager):
+
+    def create_user(self, email, password=None):
+
+        if not email:
+            raise ValueError("Users must have an email address")
+
+        user = self.model(
+            email=self.normalize_email(email),
+ 
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None):
+
+        user = self.create_user(
+            email, password=password
+        )
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
 
 
 class PyUser(AbstractUser, PyFather):
-    '''Modelo de los usuarios
-    '''
+    """Modelo de los usuarios"""
+
     SEXO_CHOICES = (
-        ('F', _('FEMALE')),
-        ('M', _('MALE')),
+        ("F", _("FEMALE")),
+        ("M", _("MALE")),
     )
     LETRACEDULA_CHOICES = (
-        ('V', 'V'),
-        ('E', 'E'),
+        ("V", "V"),
+        ("E", "E"),
     )
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     password = models.CharField(_("Password"), max_length=128)
@@ -51,28 +78,48 @@ class PyUser(AbstractUser, PyFather):
     username = None
     first_name = models.CharField(_("Name"), max_length=30)
     last_name = models.CharField(_("Last name"), max_length=30, blank=True, null=True)
-    email = models.CharField(_("Email"), max_length=254, null=False, db_index=True, unique=True)
+    email = models.CharField(
+        _("Email"), max_length=254, null=False, db_index=True, unique=True
+    )
     telefono = models.CharField(_("Phone"), max_length=255, blank=True, null=True)
     celular = models.CharField(_("Mobile Phone"), max_length=255, blank=True, null=True)
-    avatar = models.ImageField(max_length=255, storage=RenameImage(), upload_to=image_path, blank=True, null=True, default='avatar/default_avatar.png')
-    partner_id = models.ForeignKey(PyPartner, null=True, blank=True, on_delete=models.PROTECT)
-    active_company = models.ForeignKey('base.PyCompany', on_delete=models.PROTECT)
+    avatar = models.ImageField(
+        max_length=255,
+        storage=RenameImage(),
+        upload_to=image_path,
+        blank=True,
+        null=True,
+        default="avatar/default_avatar.png",
+    )
+    partner_id = models.ForeignKey(
+        PyPartner, null=True, blank=True, on_delete=models.PROTECT
+    )
+    active_company = models.ForeignKey("base.PyCompany", on_delete=models.PROTECT)
+    objects=MyUserManager()
 
     def __str__(self):
-        return '{} {}'.format(self.first_name, self.last_name)
+        return "{} {}".format(self.first_name, self.last_name)
 
     def get_full_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return "%s %s" % (self.first_name, self.last_name)
 
     def get_short_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
+        return "%s %s" % (self.first_name, self.last_name)
 
     @classmethod
-    def create(cls, first_name, last_name, email, password, is_superuser, is_staff, is_active, active_company):
-        """Crea un partner de manera sencilla
-        """
-        partner_name = '{} {}'.format(first_name, last_name)
+    def create(
+        cls,
+        first_name,
+        last_name,
+        email,
+        password,
+        is_superuser,
+        is_staff,
+        is_active,
+        active_company,
+    ):
+        """Crea un partner de manera sencilla"""
+        partner_name = "{} {}".format(first_name, last_name)
         partner = PyPartner.create(partner_name, email)
         pyuser = cls(
             first_name=first_name,
@@ -92,6 +139,6 @@ class PyUser(AbstractUser, PyFather):
         return pyuser
 
     class Meta:
-        verbose_name = _('Person')
-        verbose_name_plural = _('People')
-        db_table = 'auth_user'
+        verbose_name = _("Person")
+        verbose_name_plural = _("People")
+        db_table = "auth_user"

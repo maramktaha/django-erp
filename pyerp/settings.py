@@ -65,6 +65,7 @@ INSTALLED_APPS = [
 
     # Local Apps
     'apps.base',
+
 ]
 
 
@@ -158,12 +159,12 @@ WSGI_APPLICATION = 'pyerp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('SQL_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.environ.get('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
-        'USER': os.environ.get('SQL_USER', ''),
-        'PASSWORD': os.environ.get('SQL_PASSWORD', ''),
-        'HOST': os.environ.get('SQL_HOST', ''),
-        'PORT': os.environ.get('SQL_PORT', ''),
+        'ENGINE':'django.db.backends.mysql',
+        'NAME':'erp_project',
+        'USER': 'root',
+        'PASSWORD':'123456',
+        'HOST': 'localhost',
+        'PORT': '123456',
     }
 }
 
@@ -214,7 +215,8 @@ TIME_ZONE = 'America/Santiago'
 # Restricts languages
 LANGUAGES = [
     ('en', _('English')),
-    ('es', _('Spanish'))
+    ('es', _('Spanish')),
+    ('ar',_('Arabic'))
 ]
 # Where Django looks for translation files
 LOCALE_PATHS = [
