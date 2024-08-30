@@ -1,7 +1,7 @@
 # Django Library
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
+from django.urls import reverse
 # Thirdparty Library
 from apps.base.models import PyFather
 
